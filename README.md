@@ -1,27 +1,66 @@
-# FirebaseDemo
+# Angular Firebase Demo
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.6.4.
+An Angular application integrated with Firebase Realtime Database using AngularFire2. Demonstrates real-time data synchronization between the browser and Firebase.
 
-## Development server
+## Features
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+- Real-time data read/write with Firebase Realtime Database
+- AngularFire2 integration
 
-## Code scaffolding
+## Tech Stack
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+- Angular (CLI v1.6.4)
+- TypeScript
+- Firebase / AngularFire2
 
-## Build
+## Prerequisites
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
+- [Node.js](https://nodejs.org/) v10+
+- Angular CLI: `npm install -g @angular/cli`
+- A [Firebase](https://console.firebase.google.com/) project with Realtime Database enabled
 
-## Running unit tests
+## Getting Started
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+### 1. Install dependencies
 
-## Running end-to-end tests
+```bash
+git clone https://github.com/ahasan09/angular-firebase
+cd angular-firebase
+npm install
+```
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+### 2. Configure Firebase
 
-## Further help
+Update `src/environments/environment.ts` with your Firebase project credentials:
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+```typescript
+export const environment = {
+  production: false,
+  firebase: {
+    apiKey: 'YOUR_API_KEY',
+    authDomain: 'YOUR_PROJECT.firebaseapp.com',
+    databaseURL: 'https://YOUR_PROJECT.firebaseio.com',
+    projectId: 'YOUR_PROJECT_ID',
+    storageBucket: 'YOUR_PROJECT.appspot.com',
+    messagingSenderId: 'YOUR_SENDER_ID'
+  }
+};
+```
+
+### 3. Run the app
+
+```bash
+ng serve
+```
+
+Open [http://localhost:4200](http://localhost:4200). The app reloads automatically on file changes.
+
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| `ng serve` | Start dev server on port 4200 |
+| `ng build` | Build to `dist/` |
+| `ng build --prod` | Production build |
+| `ng test` | Run unit tests (Karma) |
+| `ng e2e` | Run end-to-end tests (Protractor) |
