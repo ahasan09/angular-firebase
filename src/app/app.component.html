@@ -1,10 +1,71 @@
-<ul>
-  <li *ngFor="let item of items | async">
-    <input type="text" #updatetext [value]="item.text" />
-    <button (click)="updateItem(item.key, updatetext.value)">Update</button>
-    <button (click)="deleteItem(item.key)">Delete</button>
-  </li>
-</ul>
-<input type="text" #newitem />
-<button (click)="addItem(newitem.value)">Add</button>
-<button (click)="deleteEverything()">Delete All</button>
+<div class="app-container">
+  @if (!currentUser()) {
+    <div class="auth-card">
+      <h1>Firebase Courses</h1>
+      <h2>{{ isRegistering() ? 'Create Account' : 'Sign In' }}</h2>
+
+      @if (authError()) {
+        <p class="error">{{ authError() }}</p>
+      }
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input id="email" type="email" [(ngModel)]="email" placeholder="you@example.com" autocomplete="email" />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input id="password" type="password" [(ngModel)]="password" placeholder="Password" autocomplete="current-password" />
+      </div>
+
+      @if (isRegistering()) {
+        <button class="btn-primary" (click)="register()">Create Account</button>
+        <button class="btn-link" (click)="isRegistering.set(false)">Already have an account? Sign in</button>
+      } @else {
+        <button class="btn-primary" (click)="signIn()">Sign In</button>
+        <button class="btn-link" (click)="isRegistering.set(true)">Don't have an account? Register</button>
+      }
+    </div>
+  } @else {
+    <div class="main-content">
+      <header class="app-header">
+        <h1>Firebase Courses</h1>
+        <div class="user-info">
+          <span>{{ currentUser()?.email }}</span>
+          <button class="btn-outline" (click)="signOut()">Sign Out</button>
+        </div>
+      </header>
+
+      @if (isLoading()) {
+        <p class="loading">Loading courses…</p>
+      } @else {
+        <ul class="course-list">
+          @for (course of courses(); track course.key) {
+            <li class="course-item">
+              <input type="text" class="course-input" #updatetext [value]="course.text" />
+              <button class="btn-secondary" (click)="updateCourse(course.key!, updatetext.value)">Update</button>
+              <button class="btn-danger-sm" (click)="deleteCourse(course.key!)">Delete</button>
+            </li>
+          } @empty {
+            <li class="empty-state">No courses yet. Add one below!</li>
+          }
+        </ul>
+
+        <div class="add-form">
+          <input
+            type="text"
+            class="course-input"
+            [(ngModel)]="newCourseText"
+            placeholder="New course name"
+            (keyup.enter)="addCourse()"
+          />
+          <button class="btn-primary" (click)="addCourse()">Add Course</button>
+        </div>
+
+        @if (courses().length > 0) {
+          <button class="btn-danger" (click)="deleteAll()">Delete All</button>
+        }
+      }
+    </div>
+  }
+</div>

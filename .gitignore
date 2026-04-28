@@ -9,6 +9,9 @@
 # dependencies
 /node_modules
 
+# environment secrets — never commit real Firebase credentials
+.env
+
 # IDEs and editors
 /.idea
 .project
