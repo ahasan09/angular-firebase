@@ -1,23 +1,25 @@
 # Angular Firebase Demo
 
-An Angular application integrated with Firebase Realtime Database using AngularFire2. Demonstrates real-time data synchronization between the browser and Firebase.
+An Angular 21 application integrated with Firebase Realtime Database using AngularFire. Demonstrates real-time data synchronization, user authentication, and CRUD operations.
 
 ## Features
 
 - Real-time data read/write with Firebase Realtime Database
-- AngularFire2 integration
+- User authentication with Firebase Auth
+- AngularFire integration
 
 ## Tech Stack
 
-- Angular (CLI v1.6.4)
-- TypeScript
-- Firebase / AngularFire2
+- Angular 21 (CLI v21)
+- TypeScript 5.7
+- Firebase / AngularFire
+- Jest (unit testing)
 
 ## Prerequisites
 
-- [Node.js](https://nodejs.org/) v10+
+- [Node.js](https://nodejs.org/) v18+
 - Angular CLI: `npm install -g @angular/cli`
-- A [Firebase](https://console.firebase.google.com/) project with Realtime Database enabled
+- A [Firebase](https://console.firebase.google.com/) project with Realtime Database and Authentication enabled
 
 ## Getting Started
 
@@ -31,21 +33,7 @@ npm install
 
 ### 2. Configure Firebase
 
-Update `src/environments/environment.ts` with your Firebase project credentials:
-
-```typescript
-export const environment = {
-  production: false,
-  firebase: {
-    apiKey: 'YOUR_API_KEY',
-    authDomain: 'YOUR_PROJECT.firebaseapp.com',
-    databaseURL: 'https://YOUR_PROJECT.firebaseio.com',
-    projectId: 'YOUR_PROJECT_ID',
-    storageBucket: 'YOUR_PROJECT.appspot.com',
-    messagingSenderId: 'YOUR_SENDER_ID'
-  }
-};
-```
+Copy `.env.example` to `.env` and fill in your Firebase project credentials. The app reads these from `src/environments/environment.ts`.
 
 ### 3. Run the app
 
@@ -59,8 +47,11 @@ Open [http://localhost:4200](http://localhost:4200). The app reloads automatical
 
 | Command | Description |
 |---------|-------------|
-| `ng serve` | Start dev server on port 4200 |
-| `ng build` | Build to `dist/` |
-| `ng build --prod` | Production build |
-| `ng test` | Run unit tests (Karma) |
-| `ng e2e` | Run end-to-end tests (Protractor) |
+| `npm start` | Start dev server on port 4200 |
+| `npm run build` | Build to `dist/` |
+| `npm test` | Run unit tests (Jest) |
+| `npm run lint` | Run ESLint |
+
+## CI
+
+GitHub Actions runs lint, tests, and a production build on every push/PR to `main`.

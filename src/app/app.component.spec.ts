@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { User } from '@angular/fire/auth';
 import { AppComponent } from './app.component';
@@ -15,19 +15,19 @@ const MOCK_COURSES: Course[] = [
 function makeAuthService(user: User | null = MOCK_USER) {
   return {
     currentUser$: of(user),
-    signIn: jasmine.createSpy('signIn').and.returnValue(Promise.resolve()),
-    register: jasmine.createSpy('register').and.returnValue(Promise.resolve()),
-    signOut: jasmine.createSpy('signOut').and.returnValue(Promise.resolve()),
+    signIn: jest.fn().mockResolvedValue(undefined),
+    register: jest.fn().mockResolvedValue(undefined),
+    signOut: jest.fn().mockResolvedValue(undefined),
   };
 }
 
 function makeCourseService(courses: Course[] = MOCK_COURSES) {
   return {
-    getCourses: jasmine.createSpy('getCourses').and.returnValue(of(courses)),
-    addCourse: jasmine.createSpy('addCourse').and.returnValue(Promise.resolve()),
-    updateCourse: jasmine.createSpy('updateCourse').and.returnValue(Promise.resolve()),
-    deleteCourse: jasmine.createSpy('deleteCourse').and.returnValue(Promise.resolve()),
-    deleteAll: jasmine.createSpy('deleteAll').and.returnValue(Promise.resolve()),
+    getCourses: jest.fn().mockReturnValue(of(courses)),
+    addCourse: jest.fn().mockResolvedValue(undefined),
+    updateCourse: jest.fn().mockResolvedValue(undefined),
+    deleteCourse: jest.fn().mockResolvedValue(undefined),
+    deleteAll: jest.fn().mockResolvedValue(undefined),
   };
 }
 
@@ -92,7 +92,7 @@ describe('AppComponent', () => {
 
     it('sets authError on signIn failure', async () => {
       const authService = makeAuthService(null);
-      authService.signIn.and.returnValue(Promise.reject({ code: 'auth/invalid-credential' }));
+      authService.signIn.mockRejectedValue({ code: 'auth/invalid-credential' });
       const courseService = makeCourseService([]);
       await TestBed.configureTestingModule({
         imports: [AppComponent],
@@ -156,18 +156,17 @@ describe('AppComponent', () => {
   });
 
   describe('CRUD operations', () => {
-    it('addCourse optimistically updates UI then calls service', fakeAsync(async () => {
+    it('addCourse optimistically updates UI then calls service', async () => {
       const { component, courseService } = await setup();
       component.newCourseText = 'New Course';
 
       const addPromise = component.addCourse();
-      expect(component.courses().some(c => c.text === 'New Course')).toBeTrue();
+      expect(component.courses().some(c => c.text === 'New Course')).toBe(true);
       expect(component.newCourseText).toBe('');
 
       await addPromise;
-      tick();
       expect(courseService.addCourse).toHaveBeenCalledWith('New Course');
-    }));
+    });
 
     it('addCourse ignores empty input', async () => {
       const { component, courseService } = await setup();
@@ -176,19 +175,18 @@ describe('AppComponent', () => {
       expect(courseService.addCourse).not.toHaveBeenCalled();
     });
 
-    it('addCourse rolls back on failure', fakeAsync(async () => {
+    it('addCourse rolls back on failure', async () => {
       const { component, courseService } = await setup(MOCK_USER, []);
-      courseService.addCourse.and.returnValue(Promise.reject(new Error('network')));
+      courseService.addCourse.mockRejectedValue(new Error('network'));
       component.newCourseText = 'Bad Course';
 
       await component.addCourse().catch(() => undefined);
-      tick();
 
-      expect(component.courses().some(c => c.text === 'Bad Course')).toBeFalse();
+      expect(component.courses().some(c => c.text === 'Bad Course')).toBe(false);
       expect(component.newCourseText).toBe('Bad Course');
-    }));
+    });
 
-    it('deleteCourse removes course optimistically', fakeAsync(async () => {
+    it('deleteCourse removes course optimistically', async () => {
       const { component, courseService } = await setup();
       const initialCount = component.courses().length;
 
@@ -196,20 +194,18 @@ describe('AppComponent', () => {
       expect(component.courses().length).toBe(initialCount - 1);
 
       await deletePromise;
-      tick();
       expect(courseService.deleteCourse).toHaveBeenCalledWith('k1');
-    }));
+    });
 
-    it('deleteCourse restores course on failure', fakeAsync(async () => {
+    it('deleteCourse restores course on failure', async () => {
       const { component, courseService } = await setup();
-      courseService.deleteCourse.and.returnValue(Promise.reject(new Error('fail')));
+      courseService.deleteCourse.mockRejectedValue(new Error('fail'));
       const before = component.courses().length;
 
       await component.deleteCourse('k1').catch(() => undefined);
-      tick();
 
       expect(component.courses().length).toBe(before);
-    }));
+    });
 
     it('updateCourse calls service with trimmed text', async () => {
       const { component, courseService } = await setup();
@@ -223,25 +219,23 @@ describe('AppComponent', () => {
       expect(courseService.updateCourse).not.toHaveBeenCalled();
     });
 
-    it('deleteAll clears courses optimistically', fakeAsync(async () => {
+    it('deleteAll clears courses optimistically', async () => {
       const { component, courseService } = await setup();
       const deleteAllPromise = component.deleteAll();
       expect(component.courses().length).toBe(0);
 
       await deleteAllPromise;
-      tick();
       expect(courseService.deleteAll).toHaveBeenCalled();
-    }));
+    });
 
-    it('deleteAll restores courses on failure', fakeAsync(async () => {
+    it('deleteAll restores courses on failure', async () => {
       const { component, courseService } = await setup();
-      courseService.deleteAll.and.returnValue(Promise.reject(new Error('fail')));
+      courseService.deleteAll.mockRejectedValue(new Error('fail'));
       const before = component.courses().length;
 
       await component.deleteAll().catch(() => undefined);
-      tick();
 
       expect(component.courses().length).toBe(before);
-    }));
+    });
   });
 });
